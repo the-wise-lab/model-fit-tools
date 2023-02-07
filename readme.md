@@ -4,7 +4,7 @@ This repository contains useful functions for evaluating model fit. It's current
 
 ## Installation
 
-To install this package, clone the repository and run `pip install -e .` from the root directory. It can then be used as a regular Python package, e.g. `from model_fit_tools.plotting import plot_recovery`.
+To install this package, clone the repository and run `pip install .` from the root directory. It can then be used as a regular Python package, e.g. `from model_fit_tools.plotting import plot_recovery`.
 
 To install other dependencies, run `pip install -r requirements.txt`. 
 
