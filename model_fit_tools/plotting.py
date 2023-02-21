@@ -3,6 +3,7 @@ import numpy as np
 import os
 from typing import List
 import datetime
+import seaborn as sns
 
 
 def plot_recovery(
@@ -87,10 +88,38 @@ def plot_recovery_matrix(
     estimated:np.ndarray,
     param_names:List[str]=None,
     scale:float=1.0,
+    xtick_rotation:float=0,
+    vmin:float=None,
+    vmax:float=None,
     save_path:str=None,
     save_fname:str='recovery_matrix.svg'
 ):
-    raise NotImplementedError("This function is not yet implemented")
+
+    # Get mean of samples if provided
+    if estimated.ndim == 3:
+        estimated = estimated.mean(axis=0)
+
+    n_params = true.shape[1]
+
+    # Get correlation matrix
+    recovery_corrs = np.corrcoef(
+        true.T, 
+        estimated.T, 
+    )[n_params:, :n_params]
+
+    # round to 2 d.p.
+    recovery_corrs = np.round(recovery_corrs, 2)
+
+    # Plot
+    f, ax = plt.subplots(figsize=(3 * scale, 3 * scale))
+
+    sns.heatmap(recovery_corrs, annot=True, cmap='viridis', square=True, vmin=vmin, vmax=vmax, cbar_kws={'label': '$r$', "shrink": .8})
+
+    plt.xticks([i + 0.5 for i in range(n_params)], param_names, rotation=xtick_rotation)
+    plt.yticks([i + 0.5 for i in range(n_params)], param_names, rotation=0, va='center')
+
+    plt.xlabel('True')
+    plt.ylabel('Recovered')
 
 
 def plot_pp(
