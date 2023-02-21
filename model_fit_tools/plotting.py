@@ -7,13 +7,13 @@ import seaborn as sns
 
 
 def plot_recovery(
-    true: np.ndarray, 
-    estimated:np.ndarray, 
-    param_names:List[str]=None,
-    show_correlation:bool=True,
-    scale:float=1.0,
-    save_path:str=None, 
-    save_fname:str=None
+    true: np.ndarray,
+    estimated: np.ndarray,
+    param_names: List[str] = None,
+    show_correlation: bool = True,
+    scale: float = 1.0,
+    save_path: str = None,
+    save_fname: str = None,
 ):
     """
     Plots recovered parameter values against true ones. Used to determine how well
@@ -40,13 +40,14 @@ def plot_recovery(
     # Get mean of samples if provided
     if estimated.ndim == 3:
         estimated = estimated.mean(axis=0)
-    
+
     # Plot
-    f, ax = plt.subplots(1, true.shape[1], figsize=((2.333 * scale) * true.shape[1], 2.8 * scale))
+    f, ax = plt.subplots(
+        1, true.shape[1], figsize=((2.333 * scale) * true.shape[1], 2.8 * scale)
+    )
 
     # Loop over parameters
     for i in range(true.shape[1]):
-
         # Plot values
         ax[i].scatter(true[:, i], estimated[:, i])
 
@@ -57,9 +58,9 @@ def plot_recovery(
 
         # Get the title of the plot
         if param_names is not None:
-            title = param_names[i] + '\n' 
+            title = param_names[i] + "\n"
         else:
-            title = ''
+            title = ""
 
         # Add correlation coefficient to title
         if show_correlation:
@@ -73,10 +74,9 @@ def plot_recovery(
 
     # Save plot if save_path is provided
     if save_path is not None:
-
         # Generate file name if not provided
         if save_fname is None:
-            save_fname = 'recovery_plot_{}.svg'.format(
+            save_fname = "recovery_plot_{}.svg".format(
                 datetime.now().strftime("%Y%m%d_%H%M%S")
             )
 
@@ -85,16 +85,16 @@ def plot_recovery(
 
 def plot_recovery_matrix(
     true: np.ndarray,
-    estimated:np.ndarray,
-    param_names:List[str]=None,
-    scale:float=1.0,
-    xtick_rotation:float=0,
-    vmin:float=None,
-    vmax:float=None,
-    save_path:str=None,
-    save_fname:str='recovery_matrix.svg'
+    estimated: np.ndarray,
+    param_names: List[str] = None,
+    scale: float = 1.0,
+    colorbar_scale: float = 1.0,
+    xtick_rotation: float = 0,
+    vmin: float = None,
+    vmax: float = None,
+    save_path: str = None,
+    save_fname: str = "recovery_matrix.svg",
 ):
-
     # Get mean of samples if provided
     if estimated.ndim == 3:
         estimated = estimated.mean(axis=0)
@@ -103,8 +103,8 @@ def plot_recovery_matrix(
 
     # Get correlation matrix
     recovery_corrs = np.corrcoef(
-        true.T, 
-        estimated.T, 
+        true.T,
+        estimated.T,
     )[n_params:, :n_params]
 
     # round to 2 d.p.
@@ -113,26 +113,46 @@ def plot_recovery_matrix(
     # Plot
     f, ax = plt.subplots(figsize=(3 * scale, 3 * scale))
 
-    sns.heatmap(recovery_corrs, annot=True, cmap='viridis', square=True, vmin=vmin, vmax=vmax, cbar_kws={'label': '$r$', "shrink": .8})
+    sns.heatmap(
+        recovery_corrs,
+        annot=True,
+        cmap="viridis",
+        square=True,
+        vmin=vmin,
+        vmax=vmax,
+        cbar_kws={"label": "$r$", "shrink": 0.8 * colorbar_scale},
+    )
 
     plt.xticks([i + 0.5 for i in range(n_params)], param_names, rotation=xtick_rotation)
-    plt.yticks([i + 0.5 for i in range(n_params)], param_names, rotation=0, va='center')
+    plt.yticks([i + 0.5 for i in range(n_params)], param_names, rotation=0, va="center")
 
-    plt.xlabel('True')
-    plt.ylabel('Recovered')
+    plt.xlabel("True")
+    plt.ylabel("Recovered")
+
+    plt.tight_layout()
+
+    # Save plot if save_path is provided
+    if save_path is not None:
+        # Generate file name if not provided
+        if save_fname is None:
+            save_fname = "recovery_matrix_{}.svg".format(
+                datetime.now().strftime("%Y%m%d_%H%M%S")
+            )
+
+        plt.savefig(os.path.join(save_path, save_fname))
 
 
 def plot_pp(
-    true: np.ndarray, 
-    estimated:np.ndarray, 
-    param_names:List[str]=None, 
-    scale:float=1.0,
-    save_path:str=None, 
-    save_fname:str=None
+    true: np.ndarray,
+    estimated: np.ndarray,
+    param_names: List[str] = None,
+    scale: float = 1.0,
+    save_path: str = None,
+    save_fname: str = None,
 ):
     """
     Probability-probability plot. Plots the proportion of observations with values that fall within
-    a given credible interval against the credible interval probability. Used for assessing how 
+    a given credible interval against the credible interval probability. Used for assessing how
     well-calibrated the posterior is. Perfectly calibrated posteriors should result in points lying
     on the diagonal.
 
@@ -153,17 +173,22 @@ def plot_pp(
 
     # Check number of dimensions in estimated values
     if estimated.ndim != 3:
-        raise ValueError("Expected 3D array (n_samples, n_observations, n_params) for estimated values, got {}D".format(estimated.ndim))
+        raise ValueError(
+            "Expected 3D array (n_samples, n_observations, n_params) for estimated values, got {}D".format(
+                estimated.ndim
+            )
+        )
 
     # Get number of params
     n_params = true.shape[1]
 
     # Plot
-    f, ax = plt.subplots(1, true.shape[1], figsize=((2.333 * scale) * true.shape[1], 2.8 * scale))
+    f, ax = plt.subplots(
+        1, true.shape[1], figsize=((2.333 * scale) * true.shape[1], 2.8 * scale)
+    )
 
     # Loop over parameters
     for param in range(n_params):
-        
         # Axis labels
         if param == 0:
             ax[param].set_ylabel("Proportion of samples\nin CI")
@@ -171,7 +196,7 @@ def plot_pp(
 
         # Get proportion of samples in CI
         ps = []
-        
+
         n_samples = estimated.shape[0]
 
         # Iterate over observations
@@ -184,7 +209,7 @@ def plot_pp(
         ax[param].plot(np.linspace(0, 1, len(ps)), np.sort(ps))
 
         # Plot 45 degree line
-        ax[param].plot([0, 1], [0, 1], color='black', linestyle='--')
+        ax[param].plot([0, 1], [0, 1], color="black", linestyle="--")
 
         # Set title
         if param_names is not None:
@@ -193,10 +218,9 @@ def plot_pp(
     plt.tight_layout()
 
     if save_path is not None:
-
         # Generate file name if not provided
         if save_fname is None:
-            save_fname = 'pp_plot_{}.svg'.format(
+            save_fname = "pp_plot_{}.svg".format(
                 datetime.now().strftime("%Y%m%d_%H%M%S")
             )
 
