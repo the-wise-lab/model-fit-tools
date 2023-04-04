@@ -14,7 +14,7 @@ def plot_recovery(
     scale: float = 1.0,
     save_path: str = None,
     save_fname: str = None,
-):
+) -> None:
     """
     Plots recovered parameter values against true ones. Used to determine how well
     the model has recovered the true parameter values.
@@ -93,8 +93,31 @@ def plot_recovery_matrix(
     vmin: float = None,
     vmax: float = None,
     save_path: str = None,
-    save_fname: str = "recovery_matrix.svg",
-):
+    save_fname: str = None,
+) -> None:
+    """
+    Plots a matrix of the correlation coefficients between true and recovered
+    parameter values. Used to determine how well the model has recovered the true
+    parameter values.
+
+    Args:
+        true (np.ndarray): True parameter values, shape (n_observations, n_params).
+        estimated (np.ndarray): Estimated parameter values. Can either be provided as
+        a 2D array of shape shape (n_observations, n_params), or as a 3D array of shape
+        (n_samples, n_observations, n_params), in which case the mean of the samples is
+        plotted.
+        param_names (List[str], optional): List of parameter names. Defaults to None.
+        scale (float, optional): Scale of the plot. Defaults to 1.0.
+        colorbar_scale (float, optional): Scale for the colorbar. Defaults to 1.0.
+        xtick_rotation (float, optional): Degrees by which to rotate x tick labels. Defaults to 0.
+        vmin (float, optional): Minimum value. Defaults to None.
+        vmax (float, optional): Maximum value. Defaults to None.
+        save_path (str, optional): Path to save the plot to. Defaults to None.
+        save_fname (str, optional): File name for the saved plot, if `save_path` is not None.
+        If None, the file name is generated automatically, including the current time and date.
+        Defaults to None.
+    """
+
     # Get mean of samples if provided
     if estimated.ndim == 3:
         estimated = estimated.mean(axis=0)
@@ -149,7 +172,7 @@ def plot_pp(
     scale: float = 1.0,
     save_path: str = None,
     save_fname: str = None,
-):
+) -> None:
     """
     Probability-probability plot. Plots the proportion of observations with values that fall within
     a given credible interval against the credible interval probability. Used for assessing how
@@ -221,6 +244,71 @@ def plot_pp(
         # Generate file name if not provided
         if save_fname is None:
             save_fname = "pp_plot_{}.svg".format(
+                datetime.now().strftime("%Y%m%d_%H%M%S")
+            )
+
+        plt.savefig(os.path.join(save_path, save_fname))
+
+
+def plot_parameter_dists(
+    estimated: np.ndarray,
+    param_names: List[str] = None,
+    scale: float = 1.0,
+    save_path: str = None,
+    save_fname: str = None,
+) -> None:
+    """
+    Plot parameter estimate distributions as histograms.
+
+    Can be used with either point estimates or posterior samples.
+
+    Args:
+        estimated (np.ndarray): Estimated parameter values. Can either be provided as
+        a 2D array of shape shape (n_observations, n_params), or as a 3D array of shape
+        (n_samples, n_observations, n_params), in which case the mean of the samples is
+        plotted.
+        param_names (List[str], optional): List of parameter names. Defaults to None.
+        scale (float, optional): Scale of the figure. Defaults to 1.0.
+        save_path (str, optional): Path to save the figure to. Defaults to None.
+        save_fname (str, optional): Filename to use when saving. Defaults to None.
+    """
+
+    # Get mean of samples if provided
+    if estimated.ndim == 3:
+        estimated = estimated.mean(axis=0)
+
+    # Plot
+    f, ax = plt.subplots(
+        1,
+        estimated.shape[1],
+        figsize=((2.333 * scale) * estimated.shape[1], 2.8 * scale),
+    )
+
+    # Loop over parameters
+    for i in range(estimated.shape[1]):
+        # Plot values
+        ax[i].hist(estimated[:, i])
+
+        # Axis labels
+        if i == 0:
+            ax[i].set_ylabel("Count")
+        ax[i].set_xlabel("Value")
+
+        # Get the title of the plot
+        if param_names is not None:
+            title = param_names[i] + "\n"
+        else:
+            title = "Parameter {}\n".format(i + 1)
+
+        ax[i].set_title(title)
+
+    plt.tight_layout()
+
+    # Save plot if save_path is provided
+    if save_path is not None:
+        # Generate file name if not provided
+        if save_fname is None:
+            save_fname = "recovery_plot_{}.svg".format(
                 datetime.now().strftime("%Y%m%d_%H%M%S")
             )
 
