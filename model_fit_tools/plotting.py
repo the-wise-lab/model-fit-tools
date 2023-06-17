@@ -1,19 +1,32 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-from typing import List
+from typing import List, Union
 import datetime
 import seaborn as sns
+
+def generate_placeholder_param_names(n_params: int) -> List[str]:
+    """
+    Generates a list of placeholder parameter names.
+
+    Args:
+        n_params (int): Number of parameters.
+
+    Returns:
+        List[str]: List of parameter names.
+    """
+    return ["Parameter {}".format(i) for i in range(n_params)]
 
 
 def plot_recovery(
     true: np.ndarray,
     estimated: np.ndarray,
-    param_names: List[str] = None,
+    param_names: Union[List[str], None] = None,
     show_correlation: bool = True,
     scale: float = 1.0,
-    save_path: str = None,
-    save_fname: str = None,
+    save_path: Union[str, None] = None,
+    save_fname: Union[str, None] = None,
+    colour_by: Union[str, None] = None,
 ) -> None:
     """
     Plots recovered parameter values against true ones. Used to determine how well
@@ -35,11 +48,16 @@ def plot_recovery(
         save_fname (str, optional): File name for the saved plot, if `save_path` is not None.
         If None, the file name is generated automatically, including the current time and date.
         Defaults to None.
+        colour_by (str, optional): Parameter name to colour the points by. Defaults to None.
     """
 
     # Get mean of samples if provided
     if estimated.ndim == 3:
         estimated = estimated.mean(axis=0)
+
+    # Create placeholder param names if they are not given
+    if param_names is None:
+        param_names = generate_placeholder_param_names(true.shape[1])
 
     # Plot
     f, ax = plt.subplots(
@@ -48,8 +66,17 @@ def plot_recovery(
 
     # Loop over parameters
     for i in range(true.shape[1]):
-        # Plot values
-        ax[i].scatter(true[:, i], estimated[:, i])
+        # Plot values, optinally colouring points by the value of the parameter specified by `colour_by`
+        if colour_by is not None:
+            ax[i].scatter(
+                true[:, i],
+                estimated[:, i],
+                alpha=0.5,
+                s=10,
+                c=true[:, param_names.index(colour_by)],
+            )
+        else:
+            ax[i].scatter(true[:, i], estimated[:, i])
 
         # Axis labels
         if i == 0:
@@ -77,7 +104,7 @@ def plot_recovery(
         # Generate file name if not provided
         if save_fname is None:
             save_fname = "recovery_plot_{}.svg".format(
-                datetime.now().strftime("%Y%m%d_%H%M%S")
+                datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             )
 
         plt.savefig(os.path.join(save_path, save_fname))
@@ -86,14 +113,14 @@ def plot_recovery(
 def plot_recovery_matrix(
     true: np.ndarray,
     estimated: np.ndarray,
-    param_names: List[str] = None,
+    param_names: Union[List[str], None] = None,
     scale: float = 1.0,
     colorbar_scale: float = 1.0,
     xtick_rotation: float = 0,
-    vmin: float = None,
-    vmax: float = None,
-    save_path: str = None,
-    save_fname: str = None,
+    vmin: Union[float, None] = None,
+    vmax: Union[float, None] = None,
+    save_path: Union[str, None] = None,
+    save_fname: Union[str, None] = None,
 ) -> None:
     """
     Plots a matrix of the correlation coefficients between true and recovered
@@ -123,6 +150,10 @@ def plot_recovery_matrix(
         estimated = estimated.mean(axis=0)
 
     n_params = true.shape[1]
+
+    # Create placeholder param names if they are not given
+    if param_names is None:
+        param_names = generate_placeholder_param_names(n_params)
 
     # Get correlation matrix
     recovery_corrs = np.corrcoef(
@@ -159,7 +190,7 @@ def plot_recovery_matrix(
         # Generate file name if not provided
         if save_fname is None:
             save_fname = "recovery_matrix_{}.svg".format(
-                datetime.now().strftime("%Y%m%d_%H%M%S")
+                datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             )
 
         plt.savefig(os.path.join(save_path, save_fname))
@@ -168,10 +199,10 @@ def plot_recovery_matrix(
 def plot_pp(
     true: np.ndarray,
     estimated: np.ndarray,
-    param_names: List[str] = None,
+    param_names: Union[List[str], None] = None,
     scale: float = 1.0,
-    save_path: str = None,
-    save_fname: str = None,
+    save_path: Union[str, None] = None,
+    save_fname: Union[str, None] = None,
 ) -> None:
     """
     Probability-probability plot. Plots the proportion of observations with values that fall within
@@ -204,6 +235,10 @@ def plot_pp(
 
     # Get number of params
     n_params = true.shape[1]
+
+    # Create placeholder param names if they are not given
+    if param_names is None:
+        param_names = generate_placeholder_param_names(n_params)
 
     # Plot
     f, ax = plt.subplots(
@@ -244,7 +279,7 @@ def plot_pp(
         # Generate file name if not provided
         if save_fname is None:
             save_fname = "pp_plot_{}.svg".format(
-                datetime.now().strftime("%Y%m%d_%H%M%S")
+                datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             )
 
         plt.savefig(os.path.join(save_path, save_fname))
@@ -252,10 +287,10 @@ def plot_pp(
 
 def plot_parameter_dists(
     estimated: np.ndarray,
-    param_names: List[str] = None,
+    param_names: Union[List[str], None] = None,
     scale: float = 1.0,
-    save_path: str = None,
-    save_fname: str = None,
+    save_path: Union[str, None] = None,
+    save_fname: Union[str, None] = None,
 ) -> None:
     """
     Plot parameter estimate distributions as histograms.
@@ -276,6 +311,13 @@ def plot_parameter_dists(
     # Get mean of samples if provided
     if estimated.ndim == 3:
         estimated = estimated.mean(axis=0)
+
+    # Get number of params
+    n_params = estimated.shape[1]
+
+    # Create placeholder param names if they are not given
+    if param_names is None:
+        param_names = generate_placeholder_param_names(n_params)
 
     # Plot
     f, ax = plt.subplots(
@@ -309,7 +351,7 @@ def plot_parameter_dists(
         # Generate file name if not provided
         if save_fname is None:
             save_fname = "recovery_plot_{}.svg".format(
-                datetime.now().strftime("%Y%m%d_%H%M%S")
+                datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             )
 
         plt.savefig(os.path.join(save_path, save_fname))
