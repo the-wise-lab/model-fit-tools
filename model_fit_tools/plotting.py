@@ -117,10 +117,12 @@ def plot_recovery_matrix(
     scale: float = 1.0,
     colorbar_scale: float = 1.0,
     xtick_rotation: float = 0,
+    cmap: str = "viridis",
     vmin: Union[float, None] = None,
     vmax: Union[float, None] = None,
     save_path: Union[str, None] = None,
     save_fname: Union[str, None] = None,
+    ax: Union[plt.Axes, None] = None,
 ) -> None:
     """
     Plots a matrix of the correlation coefficients between true and recovered
@@ -137,18 +139,21 @@ def plot_recovery_matrix(
         scale (float, optional): Scale of the plot. Defaults to 1.0.
         colorbar_scale (float, optional): Scale for the colorbar. Defaults to 1.0.
         xtick_rotation (float, optional): Degrees by which to rotate x tick labels. Defaults to 0.
+        cmap (str, optional): Colormap to use. Defaults to "viridis".
         vmin (float, optional): Minimum value. Defaults to None.
         vmax (float, optional): Maximum value. Defaults to None.
         save_path (str, optional): Path to save the plot to. Defaults to None.
         save_fname (str, optional): File name for the saved plot, if `save_path` is not None.
         If None, the file name is generated automatically, including the current time and date.
         Defaults to None.
+        ax (plt.Axes, optional): Axes object to plot on. Defaults to None.
     """
 
     # Get mean of samples if provided
     if estimated.ndim == 3:
         estimated = estimated.mean(axis=0)
 
+    # Determine the number of parameters
     n_params = true.shape[1]
 
     # Create placeholder param names if they are not given
@@ -161,28 +166,34 @@ def plot_recovery_matrix(
         estimated.T,
     )[n_params:, :n_params]
 
-    # round to 2 d.p.
+    # Round recovery correlations to 2 decimal places for cleaner visualization
     recovery_corrs = np.round(recovery_corrs, 2)
 
-    # Plot
-    f, ax = plt.subplots(figsize=(3 * scale, 3 * scale))
+    # Create a new plot if no axis is provided
+    if ax is None:
+        f, ax = plt.subplots(figsize=(3 * scale, 3 * scale))
 
+    # Plot the recovery correlations matrix as a heatmap
     sns.heatmap(
         recovery_corrs,
         annot=True,
-        cmap="viridis",
+        cmap=cmap,
         square=True,
         vmin=vmin,
         vmax=vmax,
         cbar_kws={"label": "$r$", "shrink": 0.8 * colorbar_scale},
+        ax=ax,
     )
 
+    # Label x and y axis ticks with parameter names, rotate x-axis labels if specified
     plt.xticks([i + 0.5 for i in range(n_params)], param_names, rotation=xtick_rotation)
     plt.yticks([i + 0.5 for i in range(n_params)], param_names, rotation=0, va="center")
 
+    # Label x and y axes
     plt.xlabel("True")
     plt.ylabel("Recovered")
 
+    # Label x and y axes
     plt.tight_layout()
 
     # Save plot if save_path is provided
