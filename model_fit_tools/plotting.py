@@ -1,9 +1,10 @@
 import datetime
 import os
-from typing import List, Union
+from typing import Any, Dict, List, Optional, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 
 
@@ -257,9 +258,7 @@ def plot_pp(
     if estimated.ndim != 3:
         raise ValueError(
             "Expected 3D array (n_samples, n_observations, n_params)"
-            "for estimated values, got {}D".format(
-                estimated.ndim
-            )
+            "for estimated values, got {}D".format(estimated.ndim)
         )
 
     # Get number of params
@@ -386,3 +385,273 @@ def plot_parameter_dists(
             )
 
         plt.savefig(os.path.join(save_path, save_fname))
+
+
+def plot_waic(
+    waic_data: Union[Dict[str, Any], pd.DataFrame],
+    best_model_idx: int,
+    bar_kwargs: Dict[str, Any] = {},
+    ylim_kwargs: Dict[str, Any] = {},
+    fig_kwargs: Dict[str, Any] = {},
+    rotate_xticks: bool = False,
+    ax: Optional[plt.Axes] = None,
+    colours: Optional[List[str]] = None,
+) -> None:
+    """
+    Creates a bar plot of WAIC values with standard error for given models.
+
+    This function visualizes WAIC values along with their respective standard
+    error for various models, highlighting the "best" model with a different
+    color.
+
+    Args:
+        waic_data (Union[Dict[str, Any], pd.DataFrame]): A dictionary where
+        keys are
+            strings representing model names and values are objects with
+            `elpd_waic` and `se` attributes, or a DataFrame with columns
+            "model", "waic", and "se".
+        best_model_idx (int): Index of the model considered as the best, which
+        will
+            be highlighted with a different color in the plot.
+        bar_kwargs (Dict[str, Any]): Optional keyword arguments for customizing
+        bar appearance. ylim_kwargs (Dict[str, Any]): Optional keyword
+        arguments for customizing y-axis limits. fig_kwargs (Dict[str, Any]):
+        Optional keyword arguments for customizing figure attributes.
+        rotate_xticks (bool): Whether to rotate x-axis tick labels by 45
+        degrees. ax (Optional[plt.Axes]): Matplotlib axis to plot on. If None,
+        a new figure and axis are created. colours (Optional[List[str]]): List
+        of colors to use for each bar. If None, default Matplotlib colors are
+        used.
+
+    Example:
+        waic_dict = {'model1': ModelResultObj1, 'model2': ModelResultObj2, ...}
+        plot_waic(waic_dict, best_model_idx=1) OR waic_df =
+        pd.DataFrame({'model': ['model1', 'model2'], 'waic': [waic1, waic2],
+        'se': [se1, se2]}) plot_waic(waic_df, best_model_idx=1)
+    """
+    # Check if axis is provided, else create a new figure and axis
+    if ax is None:
+        fig_kwargs = {"figsize": (2.5, 2.5), **fig_kwargs}
+        fig, ax = plt.subplots(**fig_kwargs)
+
+    # Extract color palette from Matplotlib
+    pal = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+
+    # Process waic_data depending on whether it's a dict or DataFrame
+    if isinstance(waic_data, pd.DataFrame):
+        waic_values = waic_data["waic"].tolist()
+        se_values = waic_data["se"].tolist()
+        model_names = waic_data["model"].tolist()
+    else:  # if waic_data is a dictionary
+        waic_values = [i.elpd_waic for i in waic_data.values()]
+        se_values = [i.se for i in waic_data.values()]
+        model_names = list(waic_data.keys())
+
+    # Determine colors for each bar, highlighting the best
+    # model with a different color
+    if colours is None:
+        colours = [pal[0]] * len(model_names)
+        colours[best_model_idx] = pal[1]
+
+    # Default bar plot settings
+    default_bar_kwargs = {"capsize": 5, "color": colours, **bar_kwargs}
+
+    # Plot the bar chart
+    ax.bar(
+        x=range(len(model_names)),
+        height=waic_values,
+        yerr=se_values,
+        **default_bar_kwargs,
+    )
+
+    # Default y-axis limit settings
+    default_ylim_kwargs = {
+        "bottom": min(waic_values) - 500,
+        "top": max(waic_values) + 500,
+        **ylim_kwargs,
+    }
+    ax.set_ylim(**default_ylim_kwargs)
+
+    # Format model names for display
+    model_names = [
+        i.replace("_", "\n")
+        .capitalize()
+        .replace("Mf", "MF")
+        .replace("Mb", "MB")
+        for i in model_names
+    ]
+
+    # Configure x-axis ticks and labels
+    ax.set_xticks(range(len(model_names)))
+    ax.set_xticklabels(model_names)
+
+    # Set axis labels
+    ax.set_xlabel("Model")
+    ax.set_ylabel("WAIC")
+
+    # Rotate x-axis tick labels if specified
+    if rotate_xticks:
+        ax.tick_params(axis="x", rotation=45)
+
+
+def plot_best_models(
+    df: pd.DataFrame,
+    metric: str = "waic",
+    highest_best: bool = True,
+    subjects_per_row: int = 40,
+    fig_width_scale: float = 0.15,
+    fig_height_scale: float = 0.15,
+    marker_size: int = 20,
+) -> None:
+    """
+    Generate a scatter plot grid showing the model with the highest/lowest
+    model fit metric per subject.
+
+    Parameters:
+        df (pd.DataFrame): DataFrame containing the data. Expected columns are
+            'subject', 'model', and an additional column containing the model
+            fit metric.
+        metric (str, optional): The model fit metric to use. Defaults to
+        'waic'. highest_best (bool, optional): Whether the highest value of the
+        metric is the best.
+            Defaults to True.
+        subjects_per_row (int, optional): The number of subjects per row in the
+        grid.
+            Defaults to 40.
+        fig_width_scale (float, optional): Scaling factor for figure width.
+            Defaults to 0.15.
+        fig_height_scale (float, optional): Scaling factor for figure height.
+            Defaults to 0.15.
+        marker_size (int, optional): Size of the scatter plot markers.
+            Defaults to 20.
+    """
+    # Find the model with the best metric for each subject
+    if highest_best:
+        idx_best_metric = df.groupby("subject")[metric].idxmax()
+    else:
+        idx_best_metric = df.groupby("subject")[metric].idxmin()
+    best_models = df.loc[idx_best_metric]
+
+    # Sort by model
+    best_models = best_models.sort_values(by="model")
+
+    # Calculate the number of rows needed
+    num_rows = int(np.ceil(len(best_models) / subjects_per_row))
+
+    # Generate grid positions
+    x = np.tile(np.arange(subjects_per_row), num_rows)[: len(best_models)]
+    y = np.repeat(np.arange(num_rows), subjects_per_row)[: len(best_models)]
+
+    # Create the scatter plot
+    plt.figure(
+        figsize=(
+            subjects_per_row * fig_width_scale + 2,
+            num_rows * fig_height_scale,
+        )
+    )
+    unique_models = best_models["model"].unique()
+
+    # Get matplotlib default colour cycle
+    colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+
+    # Create a scatter plot for each model type,
+    # this will automatically generate
+    # legend items if we add a label argument
+    for i, model in enumerate(unique_models):
+        mask = best_models["model"] == model
+        plt.scatter(
+            x[mask], y[mask], color=colors[i], s=marker_size, label=model
+        )
+
+    # Remove axes
+    plt.axis("off")
+
+    # Add a legend
+    plt.legend(title="Model", bbox_to_anchor=(1, 1), loc="upper left")
+
+    # Tidy up the plot
+    plt.tight_layout(rect=[0, 0, 0.85, 1])
+
+
+def plot_matrices(
+    confusion_matrix: np.array,
+    inversion_matrix: np.array,
+    model_names: list,
+    scale: float = 1.0,
+    cmap: str = "viridis",
+) -> None:
+    """
+    Plot confusion and inversion matrices as heatmaps.
+
+    Args:
+        confusion_matrix (np.array): The confusion matrix, indicating how often
+            each model is estimated to be the best when each model is true.
+        inversion_matrix (np.array): The inversion matrix normalized,
+        indicating
+            the proportion of times each model is selected as best given each
+            true model.
+        model_names (list): List of strings indicating the name of each model,
+        used for axis labels. scale (float): Scaling factor for the matrices.
+        cmap (str): The colormap to use for the heatmaps.
+
+    Returns:
+        None: Plots the matrices as heatmaps.
+
+    Example:
+        plot_matrices(confusion_matrix, inversion_matrix, ['Model1', 'Model2',
+        'Model3'])
+    """
+
+    fig, axs = plt.subplots(1, 2, figsize=(14 * scale, 6 * scale))
+
+    # Replace underscores with spaces
+    model_names = [name.replace("_", " ") for name in model_names]
+
+    # Capitalize first letter
+    model_names = [name.capitalize() for name in model_names]
+
+    # Replace 'Mf' with 'MF' and 'Mb' with 'MB'
+    model_names = [name.replace("Mf", "MF") for name in model_names]
+    model_names = [name.replace("Mb", "MB") for name in model_names]
+
+    # Plotting the confusion matrix
+    sns.heatmap(
+        data=confusion_matrix,
+        annot=True,
+        fmt=".2f",
+        cmap=cmap,
+        square=True,
+        xticklabels=model_names,
+        yticklabels=model_names,
+        ax=axs[0],
+    )
+    axs[0].set_title("Confusion Matrix")
+    axs[0].set_xlabel("Simulated Model")
+    axs[0].set_ylabel("Estimated Model")
+    # set X tick labels at 45 degree angle
+    axs[0].set_xticklabels(
+        axs[0].get_xticklabels(), rotation=45, horizontalalignment="right"
+    )
+
+    # Plotting the inversion matrix
+    sns.heatmap(
+        data=inversion_matrix,
+        annot=True,
+        fmt=".2f",
+        cmap=cmap,
+        square=True,
+        xticklabels=model_names,
+        yticklabels=model_names,
+        ax=axs[1],
+    )
+    axs[1].set_title("Inversion Matrix")
+    axs[1].set_xlabel("Simulated Model")
+    axs[1].set_ylabel("Estimated Model")
+    # set X tick labels at 45 degree angle
+    axs[1].set_xticklabels(
+        axs[1].get_xticklabels(), rotation=45, horizontalalignment="right"
+    )
+
+    # Adjust layout
+    plt.tight_layout()
+    plt.show()
