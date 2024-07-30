@@ -10,7 +10,8 @@ import seaborn as sns
 
 def generate_placeholder_param_names(n_params: int) -> List[str]:
     """
-    Generates a list of placeholder parameter names.
+    Utility function. Generates a list of placeholder 
+    parameter names.
 
     Args:
         n_params (int): Number of parameters.
@@ -38,20 +39,23 @@ def plot_recovery(
     Can be used with either point estimates or posterior samples.
 
     Args:
-        true (np.ndarray): True parameter values, shape (n_observations,
-        n_params). estimated (np.ndarray): Estimated parameter values. Can
-        either be provided as a 2D array of shape shape (n_observations,
-        n_params), or as a 3D array of shape (n_samples, n_observations,
-        n_params), in which case the mean of the samples is plotted.
+        true (np.ndarray): True parameter values, shape `(n_observations,
+            n_params)`. 
+        estimated (np.ndarray): Estimated parameter values. Can
+            either be provided as a 2D array of shape shape `(n_observations,
+            n_params)`, or as a 3D array of shape `(n_samples, n_observations,
+            n_params)`, in which case the mean of the samples is plotted.
         param_names (List[str], optional): List of parameter names. Defaults to
-        None. show_correlation (bool, optional): Whether to show the
-        correlation coefficient in the title of the plot. Defaults to True.
-        scale (float, optional): Scale of the plot. Defaults to 1.0. save_path
-        (str, optional): Path to save the plot to. Defaults to None. save_fname
-        (str, optional): File name for the saved plot, if `save_path` is not
-        None. If None, the file name is generated automatically, including the
-        current time and date. Defaults to None. colour_by (str, optional):
-        Parameter name to colour the points by. Defaults to None.
+            `None`. 
+        show_correlation (bool, optional): Whether to show the
+            correlation coefficient in the title of the plot. Defaults to `True`.
+        scale (float, optional): Scale of the plot. Defaults to `1.0`. 
+        save_path (str, optional): Path to save the plot to. Defaults to `None`. 
+        save_fname (str, optional): File name for the saved plot, if 
+            `save_path` is not `None`. If `None`, the file name is generated
+            automatically, including the current time and date. Defaults to `None`. 
+        colour_by (str, optional): Parameter name to colour the points by. 
+            Defaults to `None`.
     """
 
     # Get mean of samples if provided
@@ -136,23 +140,27 @@ def plot_recovery_matrix(
     true parameter values.
 
     Args:
-        true (np.ndarray): True parameter values, shape (n_observations,
-        n_params). estimated (np.ndarray): Estimated parameter values. Can
-        either be provided as a 2D array of shape shape (n_observations,
-        n_params), or as a 3D array of shape (n_samples, n_observations,
-        n_params), in which case the mean of the samples is plotted.
+        true (np.ndarray): True parameter values, shape `(n_observations,
+            n_params)`. 
+        estimated (np.ndarray): Estimated parameter values. Can
+            either be provided as a 2D array of shape shape `(n_observations,
+            n_params)`, or as a 3D array of shape `(n_samples, n_observations,
+            n_params)`, in which case the mean of the samples is plotted.
         param_names (List[str], optional): List of parameter names. Defaults to
-        None. scale (float, optional): Scale of the plot. Defaults to 1.0.
-        colorbar_scale (float, optional): Scale for the colorbar. Defaults to
-        1.0. xtick_rotation (float, optional): Degrees by which to rotate x
-        tick labels. Defaults to 0. cmap (str, optional): Colormap to use.
-        Defaults to "viridis". vmin (float, optional): Minimum value. Defaults
-        to None. vmax (float, optional): Maximum value. Defaults to None.
-        save_path (str, optional): Path to save the plot to. Defaults to None.
+            None. 
+        scale (float, optional): Scale of the plot. Defaults to `1.0`.
+            colorbar_scale (float, optional): Scale for the colorbar. Defaults to
+            `1.0`.
+        xtick_rotation (float, optional): Degrees by which to rotate x
+            tick labels. Defaults to `0`. 
+        cmap (str, optional): Colormap to use. Defaults to `"viridis"`. 
+        vmin (float, optional): Minimum value. Defaults to `None`. 
+        vmax (float, optional): Maximum value. Defaults to `None`.
+        save_path (str, optional): Path to save the plot to. Defaults to `None`.
         save_fname (str, optional): File name for the saved plot, if
-        `save_path` is not None. If None, the file name is generated
-        automatically, including the current time and date. Defaults to None.
-        ax (plt.Axes, optional): Axes object to plot on. Defaults to None.
+            `save_path` is not `None`. If `None`, the file name is generated
+            automatically, including the current time and date. Defaults to `None`.
+        ax (plt.Axes, optional): Axes object to plot on. Defaults to `None`.
     """
 
     # Get mean of samples if provided
@@ -238,20 +246,23 @@ def plot_pp(
     is. Perfectly calibrated posteriors should result in points lying on the
     diagonal.
 
-    NOTE: Designed for use with posterior distributions, cannot be used with
+    > NOTE: Designed for use with posterior distributions, cannot be used with
     point estimates.
 
     Args:
-        true (np.ndarray): True parameter values, shape (n_observations,
-        n_params). estimated (np.ndarray): Samples from posterior, shape
-        (n_samples, n_observations, n_params). epoch (int): Epoch number.
-        param_names (List[str], optional): List of parameter names. Defaults to
-        None. save_path (str): Path to save the plot to. scale (float,
-        optional): Scale of the plot. Defaults to 1.0. save_path (str,
-        optional): Path to save the plot to. Defaults to None. save_fname (str,
-        optional): File name for the saved plot, if `save_path` is not None. If
-        None, the file name is generated automatically, including the current
-        time and date. Defaults to None.
+        true (np.ndarray): True parameter values, shape `(n_observations,
+            n_params)`. 
+        estimated (np.ndarray): Samples from posterior, shape
+            `(n_samples, n_observations, n_params)`. 
+        param_names (List[str], optional): List of parameter names. 
+            Defaults to `None`. 
+        save_path (str): Path to save the plot to. Defaults to `None`.
+        scale (float, optional): Scale of the plot. Defaults to `1.0`. 
+        save_path (str, optional): Path to save the plot to. Defaults to None. 
+        save_fname (str, optional): File name for the saved plot, 
+            if `save_path` is not None. If None, the file name is generated 
+            automatically, including the current time and date. 
+            Defaults to `None`.
     """
 
     # Check number of dimensions in estimated values
@@ -329,13 +340,17 @@ def plot_parameter_dists(
 
     Args:
         estimated (np.ndarray): Estimated parameter values. Can either be
-        provided as a 2D array of shape shape (n_observations, n_params), or as
-        a 3D array of shape (n_samples, n_observations, n_params), in which
-        case the mean of the samples is plotted. param_names (List[str],
-        optional): List of parameter names. Defaults to None. scale (float,
-        optional): Scale of the figure. Defaults to 1.0. save_path (str,
-        optional): Path to save the figure to. Defaults to None. save_fname
-        (str, optional): Filename to use when saving. Defaults to None.
+            provided as a 2D array of shape shape 
+            `(n_observations, n_params)`, or as a 3D array of shape 
+            `(n_samples, n_observations, n_params)`, in which
+            case the mean of the samples is plotted. 
+        param_names (List[str], optional): List of parameter names. 
+            Defaults to `None`. 
+        scale (float, optional): Scale of the figure. Defaults to `1.0`. 
+        save_path (str, optional): Path to save the figure to. 
+            Defaults to `None`. 
+        save_fname (str, optional): Filename to use when saving. 
+            Defaults to `None`.
     """
 
     # Get mean of samples if provided
@@ -405,29 +420,25 @@ def plot_waic(
     color.
 
     Args:
-        waic_data (Union[Dict[str, Any], pd.DataFrame]): A dictionary where
-        keys are
-            strings representing model names and values are objects with
+        waic_data (Union[Dict[str, Any], pd.DataFrame]): A dictionary where 
+            keys are strings representing model names and values are objects with
             `elpd_waic` and `se` attributes, or a DataFrame with columns
-            "model", "waic", and "se".
+            `"model"`, `"waic"`, and `"se"`.
         best_model_idx (int): Index of the model considered as the best, which
-        will
-            be highlighted with a different color in the plot.
+            will  be highlighted with a different color in the plot.
         bar_kwargs (Dict[str, Any]): Optional keyword arguments for customizing
-        bar appearance. ylim_kwargs (Dict[str, Any]): Optional keyword
-        arguments for customizing y-axis limits. fig_kwargs (Dict[str, Any]):
-        Optional keyword arguments for customizing figure attributes.
-        rotate_xticks (bool): Whether to rotate x-axis tick labels by 45
-        degrees. ax (Optional[plt.Axes]): Matplotlib axis to plot on. If None,
-        a new figure and axis are created. colours (Optional[List[str]]): List
-        of colors to use for each bar. If None, default Matplotlib colors are
-        used.
+            bar appearance. 
+        ylim_kwargs (Dict[str, Any]): Optional keyword arguments for 
+            customizing y-axis limits. 
+        fig_kwargs (Dict[str, Any]): Optional keyword arguments for 
+            customizing figure attributes.
+        rotate_xticks (bool, optional): Whether to rotate x-axis tick labels by 45
+            degrees. Defaults to `False`.
+        ax (Optional[plt.Axes]): Matplotlib axis to plot on. If `None`,
+            a new figure and axis are created. colours (Optional[List[str]]): List
+            of colors to use for each bar. If None, default Matplotlib colors are
+            used. Defaults to `None`
 
-    Example:
-        waic_dict = {'model1': ModelResultObj1, 'model2': ModelResultObj2, ...}
-        plot_waic(waic_dict, best_model_idx=1) OR waic_df =
-        pd.DataFrame({'model': ['model1', 'model2'], 'waic': [waic1, waic2],
-        'se': [se1, se2]}) plot_waic(waic_df, best_model_idx=1)
     """
     # Check if axis is provided, else create a new figure and axis
     if ax is None:
@@ -512,18 +523,17 @@ def plot_best_models(
             'subject', 'model', and an additional column containing the model
             fit metric.
         metric (str, optional): The model fit metric to use. Defaults to
-        'waic'. highest_best (bool, optional): Whether the highest value of the
-        metric is the best.
-            Defaults to True.
+            `'waic'`. 
+        highest_best (bool, optional): Whether the highest value of the
+            metric is the best. Defaults to `True`.
         subjects_per_row (int, optional): The number of subjects per row in the
-        grid.
-            Defaults to 40.
+            grid. Defaults to `40`.
         fig_width_scale (float, optional): Scaling factor for figure width.
-            Defaults to 0.15.
+            Defaults to `0.15`.
         fig_height_scale (float, optional): Scaling factor for figure height.
-            Defaults to 0.15.
+            Defaults to `0.15`.
         marker_size (int, optional): Size of the scatter plot markers.
-            Defaults to 20.
+            Defaults to `20`.
     """
     # Find the model with the best metric for each subject
     if highest_best:
@@ -587,11 +597,10 @@ def plot_matrices(
         confusion_matrix (np.array): The confusion matrix, indicating how often
             each model is estimated to be the best when each model is true.
         inversion_matrix (np.array): The inversion matrix normalized,
-        indicating
-            the proportion of times each model is selected as best given each
-            true model.
+            indicating the proportion of times each model is selected as best 
+            given each true model.
         model_names (list): List of strings indicating the name of each model,
-        used for axis labels. scale (float): Scaling factor for the matrices.
+            used for axis labels. scale (float): Scaling factor for the matrices.
         cmap (str): The colormap to use for the heatmaps.
 
     Returns:

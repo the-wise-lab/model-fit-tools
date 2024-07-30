@@ -4,43 +4,54 @@ import pandas as pd
 
 def calculate_confusion_and_inversion(
     df: pd.DataFrame, metric: str = "waic"
-) -> (np.array, np.array):
+) -> (np.ndarray, np.ndarray):
     """
     Calculate confusion and inversion matrices based on WAIC values.
 
     This function computes the confusion matrix and inversion matrix normalized
     from a DataFrame containing simulation results. The confusion matrix
     reflects how often each model is selected as the best model when each model
-    is true (i.e., P(estimated | true)). The inversion matrix normalized
+    is true (i.e., `P(estimated | true)`). The inversion matrix normalized
     represents the proportion of times each model is estimated to be the best
-    given each true model (i.e., P(true | estimated)).
+    given each true model (i.e., `P(true | estimated)`).
 
     Args:
-        df (pd.DataFrame): A DataFrame containing the following columns:
-            - "simulated_model": Label of the model used for simulation.
-            - "estimation_model": Label of the model used for estimation.
-            - "iteration": Iteration identifier.
+        df (pd.DataFrame): A DataFrame containing the following columns:\n
+            - `"simulated_model"`: Label of the model used for simulation.
+            - `"estimation_model"`: Label of the model used for estimation.
+            - `"iteration"`: Iteration identifier (i.e., the iteration of
+            the model comparison procedure, where multiple datasets are
+            simulated and then fitted).\n
             A further column corresponding to the given metric should also be
-            present.
+            present. This column should correspond to the value of the
+            `metric` argument.
         metric (str): The name of the column to be used as the metric for
         selecting
             the winning model. Higher values should indicate better models.
             Defaults to "waic".
 
     Returns:
-        np.array: The confusion matrix representing how often each model is
+        np.ndarray: The confusion matrix representing how often each model is
             estimated to be the best when each model is true.
 
-        np.array: The inversion matrix normalized, indicating the proportion
+        np.ndarray: The inversion matrix normalized, indicating the proportion
             of times each model is the true generating model given each
             estimated model.
 
     Example:
-        confusion_matrix, inversion_matrix =
-        calculate_confusion_and_inversion(results)
+        `confusion_matrix, inversion_matrix =
+        calculate_confusion_and_inversion(results)`
 
         Here, `results` is expected to be a DataFrame with at least the columns
         "simulated_model", "estimation_model", "iteration", and "waic".
+
+        The results can then be plotted using
+        `model_fit_tools.plotting.plot_matrices`:
+
+        `model_fit_tools.plotting.plot_matrices(confusion_matrix,
+        inversion_matrix, models)`
+
+
     """
 
     # Extract unique models and initialize matrix
