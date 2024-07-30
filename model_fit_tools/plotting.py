@@ -1,9 +1,11 @@
-import matplotlib.pyplot as plt
-import numpy as np
+import datetime
 import os
 from typing import List, Union
-import datetime
+
+import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
+
 
 def generate_placeholder_param_names(n_params: int) -> List[str]:
     """
@@ -29,26 +31,26 @@ def plot_recovery(
     colour_by: Union[str, None] = None,
 ) -> None:
     """
-    Plots recovered parameter values against true ones. Used to determine how well
-    the model has recovered the true parameter values.
+    Plots recovered parameter values against true ones. Used to determine how
+    well the model has recovered the true parameter values.
 
     Can be used with either point estimates or posterior samples.
 
     Args:
-        true (np.ndarray): True parameter values, shape (n_observations, n_params).
-        estimated (np.ndarray): Estimated parameter values. Can either be provided as
-        a 2D array of shape shape (n_observations, n_params), or as a 3D array of shape
-        (n_samples, n_observations, n_params), in which case the mean of the samples is
-        plotted.
-        param_names (List[str], optional): List of parameter names. Defaults to None.
-        show_correlation (bool, optional): Whether to show the correlation coefficient
-        in the title of the plot. Defaults to True.
-        scale (float, optional): Scale of the plot. Defaults to 1.0.
-        save_path (str, optional): Path to save the plot to. Defaults to None.
-        save_fname (str, optional): File name for the saved plot, if `save_path` is not None.
-        If None, the file name is generated automatically, including the current time and date.
-        Defaults to None.
-        colour_by (str, optional): Parameter name to colour the points by. Defaults to None.
+        true (np.ndarray): True parameter values, shape (n_observations,
+        n_params). estimated (np.ndarray): Estimated parameter values. Can
+        either be provided as a 2D array of shape shape (n_observations,
+        n_params), or as a 3D array of shape (n_samples, n_observations,
+        n_params), in which case the mean of the samples is plotted.
+        param_names (List[str], optional): List of parameter names. Defaults to
+        None. show_correlation (bool, optional): Whether to show the
+        correlation coefficient in the title of the plot. Defaults to True.
+        scale (float, optional): Scale of the plot. Defaults to 1.0. save_path
+        (str, optional): Path to save the plot to. Defaults to None. save_fname
+        (str, optional): File name for the saved plot, if `save_path` is not
+        None. If None, the file name is generated automatically, including the
+        current time and date. Defaults to None. colour_by (str, optional):
+        Parameter name to colour the points by. Defaults to None.
     """
 
     # Get mean of samples if provided
@@ -61,12 +63,15 @@ def plot_recovery(
 
     # Plot
     f, ax = plt.subplots(
-        1, true.shape[1], figsize=((2.333 * scale) * true.shape[1], 2.8 * scale)
+        1,
+        true.shape[1],
+        figsize=((2.333 * scale) * true.shape[1], 2.8 * scale),
     )
 
     # Loop over parameters
     for i in range(true.shape[1]):
-        # Plot values, optinally colouring points by the value of the parameter specified by `colour_by`
+        # Plot values, optinally colouring points by the value of the parameter
+        # specified by `colour_by`
         if colour_by is not None:
             ax[i].scatter(
                 true[:, i],
@@ -126,26 +131,26 @@ def plot_recovery_matrix(
 ) -> None:
     """
     Plots a matrix of the correlation coefficients between true and recovered
-    parameter values. Used to determine how well the model has recovered the true
-    parameter values.
+    parameter values. Used to determine how well the model has recovered the
+    true parameter values.
 
     Args:
-        true (np.ndarray): True parameter values, shape (n_observations, n_params).
-        estimated (np.ndarray): Estimated parameter values. Can either be provided as
-        a 2D array of shape shape (n_observations, n_params), or as a 3D array of shape
-        (n_samples, n_observations, n_params), in which case the mean of the samples is
-        plotted.
-        param_names (List[str], optional): List of parameter names. Defaults to None.
-        scale (float, optional): Scale of the plot. Defaults to 1.0.
-        colorbar_scale (float, optional): Scale for the colorbar. Defaults to 1.0.
-        xtick_rotation (float, optional): Degrees by which to rotate x tick labels. Defaults to 0.
-        cmap (str, optional): Colormap to use. Defaults to "viridis".
-        vmin (float, optional): Minimum value. Defaults to None.
-        vmax (float, optional): Maximum value. Defaults to None.
+        true (np.ndarray): True parameter values, shape (n_observations,
+        n_params). estimated (np.ndarray): Estimated parameter values. Can
+        either be provided as a 2D array of shape shape (n_observations,
+        n_params), or as a 3D array of shape (n_samples, n_observations,
+        n_params), in which case the mean of the samples is plotted.
+        param_names (List[str], optional): List of parameter names. Defaults to
+        None. scale (float, optional): Scale of the plot. Defaults to 1.0.
+        colorbar_scale (float, optional): Scale for the colorbar. Defaults to
+        1.0. xtick_rotation (float, optional): Degrees by which to rotate x
+        tick labels. Defaults to 0. cmap (str, optional): Colormap to use.
+        Defaults to "viridis". vmin (float, optional): Minimum value. Defaults
+        to None. vmax (float, optional): Maximum value. Defaults to None.
         save_path (str, optional): Path to save the plot to. Defaults to None.
-        save_fname (str, optional): File name for the saved plot, if `save_path` is not None.
-        If None, the file name is generated automatically, including the current time and date.
-        Defaults to None.
+        save_fname (str, optional): File name for the saved plot, if
+        `save_path` is not None. If None, the file name is generated
+        automatically, including the current time and date. Defaults to None.
         ax (plt.Axes, optional): Axes object to plot on. Defaults to None.
     """
 
@@ -185,9 +190,19 @@ def plot_recovery_matrix(
         ax=ax,
     )
 
-    # Label x and y axis ticks with parameter names, rotate x-axis labels if specified
-    plt.xticks([i + 0.5 for i in range(n_params)], param_names, rotation=xtick_rotation)
-    plt.yticks([i + 0.5 for i in range(n_params)], param_names, rotation=0, va="center")
+    # Label x and y axis ticks with parameter names, rotate x-axis labels if
+    # specified
+    plt.xticks(
+        [i + 0.5 for i in range(n_params)],
+        param_names,
+        rotation=xtick_rotation,
+    )
+    plt.yticks(
+        [i + 0.5 for i in range(n_params)],
+        param_names,
+        rotation=0,
+        va="center",
+    )
 
     # Label x and y axes
     plt.xlabel("True")
@@ -216,30 +231,33 @@ def plot_pp(
     save_fname: Union[str, None] = None,
 ) -> None:
     """
-    Probability-probability plot. Plots the proportion of observations with values that fall within
-    a given credible interval against the credible interval probability. Used for assessing how
-    well-calibrated the posterior is. Perfectly calibrated posteriors should result in points lying
-    on the diagonal.
+    Probability-probability plot. Plots the proportion of observations with
+    values that fall within a given credible interval against the credible
+    interval probability. Used for assessing how well-calibrated the posterior
+    is. Perfectly calibrated posteriors should result in points lying on the
+    diagonal.
 
-    NOTE: Designed for use with posterior distributions, cannot be used with point estimates.
+    NOTE: Designed for use with posterior distributions, cannot be used with
+    point estimates.
 
     Args:
-        true (np.ndarray): True parameter values, shape (n_observations, n_params).
-        estimated (np.ndarray): Samples from posterior, shape (n_samples, n_observations, n_params).
-        epoch (int): Epoch number.
-        param_names (List[str], optional): List of parameter names. Defaults to None.
-        save_path (str): Path to save the plot to.
-        scale (float, optional): Scale of the plot. Defaults to 1.0.
-        save_path (str, optional): Path to save the plot to. Defaults to None.
-        save_fname (str, optional): File name for the saved plot, if `save_path` is not None.
-        If None, the file name is generated automatically, including the current time and date.
-        Defaults to None.
+        true (np.ndarray): True parameter values, shape (n_observations,
+        n_params). estimated (np.ndarray): Samples from posterior, shape
+        (n_samples, n_observations, n_params). epoch (int): Epoch number.
+        param_names (List[str], optional): List of parameter names. Defaults to
+        None. save_path (str): Path to save the plot to. scale (float,
+        optional): Scale of the plot. Defaults to 1.0. save_path (str,
+        optional): Path to save the plot to. Defaults to None. save_fname (str,
+        optional): File name for the saved plot, if `save_path` is not None. If
+        None, the file name is generated automatically, including the current
+        time and date. Defaults to None.
     """
 
     # Check number of dimensions in estimated values
     if estimated.ndim != 3:
         raise ValueError(
-            "Expected 3D array (n_samples, n_observations, n_params) for estimated values, got {}D".format(
+            "Expected 3D array (n_samples, n_observations, n_params)"
+            "for estimated values, got {}D".format(
                 estimated.ndim
             )
         )
@@ -253,7 +271,9 @@ def plot_pp(
 
     # Plot
     f, ax = plt.subplots(
-        1, true.shape[1], figsize=((2.333 * scale) * true.shape[1], 2.8 * scale)
+        1,
+        true.shape[1],
+        figsize=((2.333 * scale) * true.shape[1], 2.8 * scale),
     )
 
     # Loop over parameters
@@ -309,14 +329,14 @@ def plot_parameter_dists(
     Can be used with either point estimates or posterior samples.
 
     Args:
-        estimated (np.ndarray): Estimated parameter values. Can either be provided as
-        a 2D array of shape shape (n_observations, n_params), or as a 3D array of shape
-        (n_samples, n_observations, n_params), in which case the mean of the samples is
-        plotted.
-        param_names (List[str], optional): List of parameter names. Defaults to None.
-        scale (float, optional): Scale of the figure. Defaults to 1.0.
-        save_path (str, optional): Path to save the figure to. Defaults to None.
-        save_fname (str, optional): Filename to use when saving. Defaults to None.
+        estimated (np.ndarray): Estimated parameter values. Can either be
+        provided as a 2D array of shape shape (n_observations, n_params), or as
+        a 3D array of shape (n_samples, n_observations, n_params), in which
+        case the mean of the samples is plotted. param_names (List[str],
+        optional): List of parameter names. Defaults to None. scale (float,
+        optional): Scale of the figure. Defaults to 1.0. save_path (str,
+        optional): Path to save the figure to. Defaults to None. save_fname
+        (str, optional): Filename to use when saving. Defaults to None.
     """
 
     # Get mean of samples if provided
