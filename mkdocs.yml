@@ -1,0 +1,7 @@
+site_name: Model fit tools documentation
+
+plugins:
+  - mkdocstrings
+  
+theme:
+  name: "material"
