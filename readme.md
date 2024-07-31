@@ -8,6 +8,10 @@ To install this package, clone the repository and run `pip install . -e` from th
 
 To install other dependencies, run `pip install -r requirements.txt`.
 
+## Documentation
+
+Documentation is available [here](https://model-fit-tools.thewiselab.org).
+
 ## Examples
 
 To plot parameter recovery, use the `plot_recovery` function. For example:
