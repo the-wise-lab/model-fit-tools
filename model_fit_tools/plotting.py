@@ -31,6 +31,7 @@ def plot_recovery(
     save_path: Union[str, None] = None,
     save_fname: Union[str, None] = None,
     colour_by: Union[str, None] = None,
+    scatter_kwargs: Dict[str, Any] = {},
 ) -> None:
     """
     Plots recovered parameter values against true ones. Used to determine how
@@ -56,6 +57,8 @@ def plot_recovery(
             automatically, including the current time and date. Defaults to `None`.
         colour_by (str, optional): Parameter name to colour the points by.
             Defaults to `None`.
+        scatter_kwargs (Dict[str, Any], optional): Optional keyword arguments
+            for customizing scatter plot appearance. Defaults to `{}`.
     """
 
     # Get mean of samples if provided
@@ -73,6 +76,16 @@ def plot_recovery(
         figsize=((2.333 * scale) * true.shape[1], 2.8 * scale),
     )
 
+    # Default scatter plot settings
+    default_scatter_kwargs = {"alpha": 0.5, "s": 10, **scatter_kwargs}
+
+    # Update with supplied scatter plot settings
+    scatter_kwargs = {**default_scatter_kwargs, **scatter_kwargs}
+
+    # Remove any "c" options if using colour_by
+    if colour_by is not None:
+        scatter_kwargs.pop("c", None)
+
     # Loop over parameters
     for i in range(true.shape[1]):
         # Plot values, optinally colouring points by the value of the parameter
@@ -81,12 +94,11 @@ def plot_recovery(
             ax[i].scatter(
                 true[:, i],
                 estimated[:, i],
-                alpha=0.5,
-                s=10,
                 c=true[:, param_names.index(colour_by)],
+                **scatter_kwargs,
             )
         else:
-            ax[i].scatter(true[:, i], estimated[:, i])
+            ax[i].scatter(true[:, i], estimated[:, i], **scatter_kwargs)
 
         # Axis labels
         if i == 0:
