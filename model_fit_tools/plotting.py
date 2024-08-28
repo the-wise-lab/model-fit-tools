@@ -673,4 +673,3 @@ def plot_matrices(
 
     # Adjust layout
     plt.tight_layout()
-    plt.show()
