@@ -49,12 +49,15 @@ def plot_recovery(
         param_names (List[str], optional): List of parameter names. Defaults to
             `None`.
         show_correlation (bool, optional): Whether to show the
-            correlation coefficient in the title of the plot. Defaults to `True`.
+            correlation coefficient in the title of the plot. Defaults to
+            `True`.
         scale (float, optional): Scale of the plot. Defaults to `1.0`.
-        save_path (str, optional): Path to save the plot to. Defaults to `None`.
+        save_path (str, optional): Path to save the plot to. Defaults to
+            `None`.
         save_fname (str, optional): File name for the saved plot, if
             `save_path` is not `None`. If `None`, the file name is generated
-            automatically, including the current time and date. Defaults to `None`.
+            automatically, including the current time and date. Defaults to
+            `None`.
         colour_by (str, optional): Parameter name to colour the points by.
             Defaults to `None`.
         scatter_kwargs (Dict[str, Any], optional): Optional keyword arguments
@@ -161,17 +164,19 @@ def plot_recovery_matrix(
         param_names (List[str], optional): List of parameter names. Defaults to
             None.
         scale (float, optional): Scale of the plot. Defaults to `1.0`.
-            colorbar_scale (float, optional): Scale for the colorbar. Defaults to
-            `1.0`.
+            colorbar_scale (float, optional): Scale for the colorbar. Defaults
+            to `1.0`.
         xtick_rotation (float, optional): Degrees by which to rotate x
             tick labels. Defaults to `0`.
         cmap (str, optional): Colormap to use. Defaults to `"viridis"`.
         vmin (float, optional): Minimum value. Defaults to `None`.
         vmax (float, optional): Maximum value. Defaults to `None`.
-        save_path (str, optional): Path to save the plot to. Defaults to `None`.
+        save_path (str, optional): Path to save the plot to. Defaults to
+            `None`.
         save_fname (str, optional): File name for the saved plot, if
             `save_path` is not `None`. If `None`, the file name is generated
-            automatically, including the current time and date. Defaults to `None`.
+            automatically, including the current time and date. Defaults to
+            `None`.
         ax (plt.Axes, optional): Axes object to plot on. Defaults to `None`.
     """
 
@@ -434,8 +439,8 @@ def plot_waic(
 
     Args:
         waic_data (Union[Dict[str, Any], pd.DataFrame]): A dictionary where
-            keys are strings representing model names and values are objects with
-            `elpd_waic` and `se` attributes, or a DataFrame with columns
+            keys are strings representing model names and values are objects
+            with `elpd_waic` and `se` attributes, or a DataFrame with columns
             `"model"`, `"waic"`, and `"se"`.
         best_model_idx (int): Index of the model considered as the best, which
             will  be highlighted with a different color in the plot.
@@ -445,12 +450,12 @@ def plot_waic(
             customizing y-axis limits.
         fig_kwargs (Dict[str, Any]): Optional keyword arguments for
             customizing figure attributes.
-        rotate_xticks (bool, optional): Whether to rotate x-axis tick labels by 45
-            degrees. Defaults to `False`.
+        rotate_xticks (bool, optional): Whether to rotate x-axis tick labels by
+            45 degrees. Defaults to `False`.
         ax (Optional[plt.Axes]): Matplotlib axis to plot on. If `None`,
-            a new figure and axis are created. colours (Optional[List[str]]): List
-            of colors to use for each bar. If None, default Matplotlib colors are
-            used. Defaults to `None`
+            a new figure and axis are created. colours (Optional[List[str]]):
+            List of colors to use for each bar. If None, default Matplotlib
+            colors are used. Defaults to `None`
         model_rename_dict (Optional[Dict[str, str]]): Dictionary mapping model
             names to their display names. Defaults to `None`.
 
@@ -610,7 +615,8 @@ def plot_matrices(
             indicating the proportion of times each model is selected as best
             given each true model.
         model_names (list): List of strings indicating the name of each model,
-            used for axis labels. scale (float): Scaling factor for the matrices.
+            used for axis labels. scale (float): Scaling factor for the
+            matrices.
         cmap (str): The colormap to use for the heatmaps.
 
     Returns:

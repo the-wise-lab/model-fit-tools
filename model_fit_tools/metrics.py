@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def expected_calibration_error(
     true: np.ndarray, estimated: np.ndarray, num_bins: int = 10
 ) -> np.ndarray:
